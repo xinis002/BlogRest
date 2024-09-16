@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 from celery import app as celery_app
 
@@ -36,6 +37,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth",
     "allauth.socialaccount",
+    "drf_yasg",
+    "django_celery_beat",
 
 
 ]
@@ -125,6 +128,13 @@ CORS_ALLOWED_ORIGINS = [
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'send-habit-reminders-every-minute': {
+        'task': 'habits.tasks.send_habit_reminders',
+        'schedule': crontab(minute='*/1'),
+    },
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
